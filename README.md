@@ -17,7 +17,7 @@ See the [pip documentation](https://pip.pypa.io/en/latest/user_guide.html) for m
 
 Exifreader is tested and officially supported on the following Python versions:
 
-- 3.5 **Support will likely be removed in future releases**
+- 3.5 *Support will likely be removed in future releases*
 - 3.6
 - 3.7
 - 3.8
