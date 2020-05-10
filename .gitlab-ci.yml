@@ -31,7 +31,7 @@ dependency_scanning:
     - flake8 EXIF.py ExifReader
     - bandit -r EXIF.py ExifReader
     - find exif-samples-master -name *.tiff -o -name *.jpg | xargs EXIF.py
-    - find exif-samples-master -name *.tiff -o -name *.jpg | xargs EXIF.py -dc
+    - find exif-samples-master -name *.tiff -o -name *.jpg | xargs EXIF.py -d
 
 python-3.4-lint:
   extends: ".lint"
