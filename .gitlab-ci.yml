@@ -12,19 +12,19 @@ license_scanning:
   only:
     refs:
       - tags
-      - master
+      - publish
 
 dependency_scanning:
   only:
     refs:
       - tags
-      - master
+      - publish
 
 .lint:
   stage: lint
   before_script:
     - pip install -U pip . -r requirements.txt bandit flake8 pylint
-    - wget https://github.com/ianare/exif-samples/archive/master.tar.gz; tar -xzf master.tar.gz
+    - wget --quiet https://github.com/ianare/exif-samples/archive/master.tar.gz; tar -xzf master.tar.gz
   script:
     # Pylint throws many errors that need to work to fix
     #- pylint --rcfile=tox.ini EXIF.py ExifReader
@@ -82,9 +82,13 @@ python-3.8-build:
   stage: Test_Build
   before_script:
     - pip install -U pip --quiet
+    - wget --quiet https://github.com/ianare/exif-samples/archive/master.tar.gz; tar -xzf master.tar.gz
   script:
     - pip install dist/*.whl
     - pip show -f ExifReader
+    - find exif-samples-master -name *.tiff -o -name *.jpg | xargs EXIF.py
+    - find exif-samples-master -name *.tiff -o -name *.jpg | xargs EXIF.py -d
+
 
 python-3.5-test:
   extends: ".test"
@@ -101,3 +105,20 @@ python-3.7-test:
 python-3.8-test:
   extends: ".test"
   image: python:3.8
+
+Deploy_to_PyPi:
+  image: python:3.7
+  stage: Deploy
+  variables:
+    TWINE_USERNAME: $PYPI_USER
+    TWINE_PASSWORD: $PRODUCTION_PASSWORD
+  before_script:
+    - pip install -U pip setuptools twine --quiet
+  script:
+    - python -m twine upload --verbose dist/*
+  only:
+    refs:
+      - tags
+      - publish
+    variables:
+      - $CI_COMMIT_TAG

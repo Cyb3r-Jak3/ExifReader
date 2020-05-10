@@ -1,7 +1,6 @@
 # ExifReader
 
-**Fork of Exif.py from [ianare](https://github.com/ianare/exif-py)**
-**Used under BSD License**
+**Fork of Exif.py from [ianare](https://github.com/ianare/exif-py) and used under BSD License**
 
 Easy to use Python module to extract Exif metadata from tiff and jpeg files.
 
@@ -12,8 +11,7 @@ Originally written by Gene Cash & Thierry Bousch.
 ### PyPi
 
 The recommend process is into install exifreader from the [PyPi package](https://pypi.org/project/exifreader)
-See the [pip documentation](https://pip.pypa.io/en/latest/user_guide.html)
-_ for more info.
+See the [pip documentation](https://pip.pypa.io/en/latest/user_guide.html) for more info.
 
 ## Compatibility
 
@@ -22,6 +20,7 @@ Exifreader is tested and officially supported on the following Python versions:
 - 3.5 **Support will likely be removed in future releases**
 - 3.6
 - 3.7
+- 3.8
 
 ## Usage
 
@@ -57,7 +56,6 @@ values in the file named by path_name.
 You can process the tags as you wish. In particular, you can iterate through all the tags with
 
 ```python
-
     for tag in tags.keys():
         if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
             print "Key: %s, value %s" % (tag, tags[tag])
@@ -88,7 +86,7 @@ These options can be used both in command line mode and within a script.
 
 ### Faster Processing
 
-Don't process makernote tags, don't extract the thumbnail image (if any).
+Don't process makernotes tags, don't extract the thumbnail image (if any).
 
 Pass the ``-q`` or ``--quick`` command line arguments, or as
 
@@ -103,7 +101,6 @@ To stop processing the file after a specified tag is retrieved.
 Pass the ``-t TAG`` or ``--stop-tag TAG`` argument, or as
 
 ```python
-
     tags = exifread.process_file(f, stop_tag='TAG')
 ```
 
@@ -118,6 +115,5 @@ Return an error on invalid tags instead of silently ignoring.
 Pass the ``-s`` or ``--strict`` argument, or as::
 
 ```python
-
     tags = exifread.process_file(f, strict=True)
 ```
