@@ -1,6 +1,7 @@
 
 from ...utils import make_string, Ratio
 
+
 def ev_bias(seq):
     """
     First digit seems to be in steps of 1/6 EV.
@@ -48,6 +49,7 @@ def ev_bias(seq):
         r = Ratio(a, step)
         ret_str = ret_str + r.__repr__() + ' EV'
     return ret_str
+
 
 # Nikon E99x MakerNote Tags
 TAGS_NEW = {
@@ -155,7 +157,7 @@ TAGS_NEW = {
     0x00A8: ('FlashInfo', ),
     0x00A9: ('ImageOptimization', ),
     0x00AA: ('Saturation', ),
-    0x00AB: ('DigitalVariProgram', ),
+    0x00AB: ('DigitalVairProgram', ),
     0x00AC: ('ImageStabilization', ),
     0x00AD: ('AFResponse', ),
     0x00B0: ('MultiExposure', ),

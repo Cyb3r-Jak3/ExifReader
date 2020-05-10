@@ -17,17 +17,18 @@ def increment_base(data, base):
     return ord_(data[base + 2]) * 256 + ord_(data[base + 3]) + 2
 
 
-def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug=False, truncate_tags=True, auto_seek=True):
+def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False,
+                 debug=False, truncate_tags=True, auto_seek=True):
     """
     Process an image file (expects an open file object).
 
     This is the function that has to deal with all the arbitrary nasty bits
     of the EXIF standard.
     """
-    
+
     if auto_seek:
         f.seek(0)
-    
+
     # by default do not fake an EXIF beginning
     fake_exif = 0
 
@@ -42,15 +43,18 @@ def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug
         offset = 0
     elif data[4:12] == b'ftypheic':
         f.seek(0)
-        heic = HEICExifFinder (f)
+        heic = HEICExifFinder(f)
         offset, endian = heic.find_exif()
     elif data[0:2] == b'\xFF\xD8':
         # it's a JPEG file
-        logger.debug("JPEG format recognized data[0:2]=0x%X%X", ord_(data[0]), ord_(data[1]))
+        logger.debug("JPEG format recognized data[0:2]=0x%X%X",
+                     ord_(data[0]),
+                     ord_(data[1]))
         base = 2
         logger.debug("data[2]=0x%X data[3]=0x%X data[6:10]=%s",
                      ord_(data[2]), ord_(data[3]), data[6:10])
-        while ord_(data[2]) == 0xFF and data[6:10] in (b'JFIF', b'JFXX', b'OLYM', b'Phot'):
+        while ord_(data[2]) == 0xFF and data[6:10] in [b'JFIF', b'JFXX',
+                                                       b'OLYM', b'Phot']:
             length = ord_(data[4]) * 256 + ord_(data[5])
             logger.debug(" Length offset is %s", length)
             f.read(length - 8)
@@ -80,7 +84,8 @@ def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug
                              ord_(data[base + 3]))
                 logger.debug("  Code: %s", data[base + 4:base + 8])
                 if data[base + 4:base + 8] == b"Exif":
-                    logger.debug("  Decrement base by 2 to get to pre-segment header (for compatibility with later code)")
+                    logger.debug("Decrement base by 2 to get to pre-segment header"
+                                 "(for compatibility with later code)")
                     base -= 2
                     break
                 increment = increment_base(data, base)
@@ -145,15 +150,16 @@ def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug
                 logger.debug("  Increment base by %s", increment)
                 base += increment
                 logger.debug(
-                    "  There is useful EXIF-like data here (quality, comment, copyright), but we have no parser for it.")
+                    "There is useful EXIF-like data here (quality, comment, copyright),"
+                    "but we have no parser for it.")
             else:
                 try:
                     increment = increment_base(data, base)
-                    logger.debug("  Got 0x%X and 0x%X instead",
+                    logger.debug("Got 0x%X and 0x%X instead",
                                  ord_(data[base]),
                                  ord_(data[base + 1]))
                 except IndexError:
-                    logger.debug("  Unexpected/unhandled segment type or file content.")
+                    logger.debug("Unexpected/unhandled segment type or file content.")
                     return {}
                 else:
                     logger.debug("  Increment base by %s", increment)
@@ -163,7 +169,7 @@ def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug
             # detected EXIF header
             offset = f.tell()
             endian = f.read(1)
-            #HACK TEST:  endian = 'M'
+            # HACK TEST:  endian = 'M'
         elif ord_(data[2 + base]) == 0xFF and data[6 + base:10 + base + 1] == b'Ducky':
             # detected Ducky header.
             logger.debug("EXIF-like header (normally 0xFF and code): 0x%X and %s",
@@ -178,7 +184,8 @@ def process_file(f, stop_tag=DEFAULT_STOP_TAG, details=True, strict=False, debug
             endian = f.read(1)
         else:
             # no EXIF information
-            logger.debug("No EXIF header expected data[2+base]==0xFF and data[6+base:10+base]===Exif (or Duck)")
+            logger.debug("No EXIF header expected data[2+base]==0xFF and"
+                         "data[6+base:10+base]===Exif (or Duck)")
             logger.debug("Did get 0x%X and %s",
                          ord_(data[2 + base]), data[6 + base:10 + base + 1])
             return {}

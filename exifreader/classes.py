@@ -12,6 +12,7 @@ try:
 except NameError:
     basestring = str
 
+
 class IfdTag:
     """
     Eases dealing with tags.
@@ -41,7 +42,7 @@ class IfdTag:
                                          FIELD_TYPES[self.field_type][2],
                                          self.printable,
                                          self.field_offset)
-        except:
+        except (TypeError, AttributeError):
             s = '(%s) %s=%s @ %s' % (str(self.tag),
                                      FIELD_TYPES[self.field_type][2],
                                      self.printable,
@@ -81,14 +82,14 @@ class ExifHeader:
         try:
             fmt += {
                 (1, False): 'B',
-                (1, True):  'b',
+                (1, True): 'b',
                 (2, False): 'H',
-                (2, True):  'h',
+                (2, True): 'h',
                 (4, False): 'I',
-                (4, True):  'i',
+                (4, True): 'i',
                 (8, False): 'L',
-                (8, True):  'l',
-                }[(length, signed)]
+                (8, True): 'l',
+            }[(length, signed)]
         except KeyError:
             raise ValueError('unexpected unpacking length: %d' % length)
         self.file.seek(self.offset + offset)
@@ -205,12 +206,15 @@ class ExifHeader:
                                 try:
                                     values = values.decode("utf-8")
                                 except UnicodeDecodeError:
-                                    logger.warning("Possibly corrupted field %s in %s IFD", tag_name, ifd_name)
+                                    logger.warning("Possibly corrupted field %s in %s IFD",
+                                                   tag_name, ifd_name)
                         except OverflowError:
-                            logger.warn('OverflowError at position: %s, length: %s', file_position, count)
+                            logger.warn('OverflowError at position: %s, length: %s',
+                                        file_position, count)
                             values = ''
                         except MemoryError:
-                            logger.warn('MemoryError at position: %s, length: %s', file_position, count)
+                            logger.warn('MemoryError at position: %s, length: %s',
+                                        file_position, count)
                             values = ''
                     else:
                         values = ''
@@ -227,7 +231,7 @@ class ExifHeader:
                                 # a ratio
                                 value = Ratio(self.s2n(offset, 4, signed),
                                               self.s2n(offset + 4, 4, signed))
-                            elif field_type in (11,12):
+                            elif field_type in (11, 12):
                                 # a float or double
                                 unpack_format = ""
                                 if self.endian == 'I':
@@ -240,7 +244,7 @@ class ExifHeader:
                                     unpack_format += "d"
                                 self.file.seek(self.offset + offset)
                                 byte_str = self.file.read(type_length)
-                                value = struct.unpack(unpack_format,byte_str)
+                                value = struct.unpack(unpack_format, byte_str)
                             else:
                                 value = self.s2n(offset, type_length, signed)
                             values.append(value)
@@ -256,8 +260,8 @@ class ExifHeader:
                 # now 'values' is either a string or an array
                 if count == 1 and field_type != 2:
                     printable = str(values[0])
-                elif count > 50 and len(values) > 20 and not isinstance(values, basestring) :
-                    if self.truncate_tags :
+                elif count > 50 and len(values) > 20 and not isinstance(values, basestring):
+                    if self.truncate_tags:
                         printable = str(values[0:20])[0:-1] + ", ... ]"
                     else:
                         printable = str(values[0:-1])
@@ -277,7 +281,8 @@ class ExifHeader:
                             ifd_info = tag_entry[1]
                             try:
                                 logger.debug('%s SubIFD at offset %d:', ifd_info[0], values[0])
-                                self.dump_ifd(values[0], ifd_info[0], tag_dict=ifd_info[1], stop_tag=stop_tag)
+                                self.dump_ifd(values[0], ifd_info[0], tag_dict=ifd_info[1],
+                                              stop_tag=stop_tag)
                             except IndexError:
                                 logger.warn('No values found for %s SubIFD', ifd_info[0])
                         else:
@@ -440,9 +445,9 @@ class ExifHeader:
             self.dump_ifd(note.field_offset + 8, 'MakerNote',
                           tag_dict=makernote.olympus.TAGS)
             # TODO
-            #for i in (('MakerNote Tag 0x2020', makernote.OLYMPUS_TAG_0x2020),):
+            # for i in (('MakerNote Tag 0x2020', makernote.OLYMPUS_TAG_0x2020),):
             #    self.decode_olympus_tag(self.tags[i[0]].values, i[1])
-            #return
+            # return
 
         # Casio
         if 'CASIO' in make or 'Casio' in make:
@@ -471,7 +476,7 @@ class ExifHeader:
         if make == 'Apple' and \
                 note.values[0:10] == [65, 112, 112, 108, 101, 32, 105, 79, 83, 0]:
             t = self.offset
-            self.offset += note.field_offset+14
+            self.offset += note.field_offset + 14
             self.dump_ifd(0, 'MakerNote',
                           tag_dict=makernote.apple.TAGS)
             self.offset = t
@@ -570,11 +575,11 @@ class ExifHeader:
                                                         0, None, None, None)
 
     def parse_xmp(self, xmp_string):
-        import xml.dom.minidom
+        import defusedxml.minidom
 
         logger.debug('XMP cleaning data')
 
-        xml = xml.dom.minidom.parseString(xmp_string)
+        xml = defusedxml.minidom.parseString(xmp_string)
         pretty = xml.toprettyxml()
         cleaned = []
         for line in pretty.splitlines():

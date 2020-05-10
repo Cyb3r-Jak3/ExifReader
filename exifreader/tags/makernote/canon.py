@@ -670,6 +670,7 @@ def subtract_one(value):
 def convert_temp(value):
     return '%d C' % (value - 128)
 
+
 # CameraInfo data structures have variable sized members. Each entry here is:
 # byte offset: (item name, data item type, decoding map).
 # Note that the data item type is fed directly to struct.unpack at the
@@ -688,7 +689,7 @@ CAMERA_INFO_5DMKII = {
     455: ('DirectoryIndex', '<L', subtract_one),
 }
 
-CAMERA_INFO_5DMKIII = {
+CAMERA_INFO_5DMKII = {
     27: ('CameraTemperature', '<B', convert_temp),
     652: ('FileIndex', '<L', add_one),
     656: ('FileIndex2', '<L', add_one),
@@ -706,6 +707,6 @@ CAMERA_INFO_600D = {
 CAMERA_INFO_MODEL_MAP = {
     r'EOS 5D$': CAMERA_INFO_5D,
     r'EOS 5D Mark II$': CAMERA_INFO_5DMKII,
-    r'EOS 5D Mark III$': CAMERA_INFO_5DMKIII,
+    r'EOS 5D Mark III$': CAMERA_INFO_5DMKII,
     r'\b(600D|REBEL T3i|Kiss X5)\b': CAMERA_INFO_600D,
 }

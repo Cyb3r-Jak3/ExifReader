@@ -30,3 +30,5 @@ IGNORE_TAGS = (
     0x927C,  # MakerNote Tags
     0x02BC,  # XPM
 )
+
+__all__ = [".exif", ".makernote"]

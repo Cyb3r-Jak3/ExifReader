@@ -8,6 +8,7 @@
 #
 # Copyright (c) 2002-2007 Gene Cash
 # Copyright (c) 2007-2014 Ianaré Sévi and contributors
+# Copyright (c) 2020-     Cyb3r Jak3
 #
 # See LICENSE.txt file for licensing information
 # See ChangeLog.rst file for all contributors and changes
@@ -18,74 +19,61 @@ Runs Exif tag extraction in command line.
 """
 
 import sys
-import getopt
-import logging
+import argparse
 import timeit
-from exifread.tags import DEFAULT_STOP_TAG, FIELD_TYPES
-from exifread import process_file, exif_log, __version__
+from exifreader.tags import DEFAULT_STOP_TAG, FIELD_TYPES
+from exifreader import process_file, exif_log, __version__
 
 logger = exif_log.get_logger()
 
 
-def usage(exit_status):
-    """Show command line usage."""
-    msg = ('Usage: EXIF.py [OPTIONS] file1 [file2 ...]\n'
-           'Extract EXIF information from digital camera image files.\n\nOptions:\n'
-           '-h --help               Display usage information and exit.\n'
-           '-v --version            Display version information and exit.\n'
-           '-q --quick              Do not process MakerNotes.\n'
-           '-t TAG --stop-tag TAG   Stop processing when this tag is retrieved.\n'
-           '-s --strict             Run in strict mode (stop on errors).\n'
-           '-d --debug              Run in debug mode (display extra info).\n'
-           '-c --color              Output in color (only works with debug on POSIX).\n'
-    )
-    print(msg)
-    sys.exit(exit_status)
-
-
 def show_version():
     """Show the program version."""
-    print('Version %s on Python%s' % (__version__, sys.version_info[0]))
+    print('Version %s on Python %s' % (__version__, sys.version[0:5]))
     sys.exit(0)
+
+
+def parse_arguments():
+    """Parses command line arguments"""
+    parser = argparse.ArgumentParser(
+        description="Library to extract Exif information from digital camera image files.")
+
+    parser.add_argument('files', nargs='*', default=None,
+                        help='Path of photos to check.')
+    parser.add_argument(
+        "-v", "--version", action="store_true", default=False,
+        help="Display version information and exit.")
+    parser.add_argument(
+        "-q", "--quick", action="store_false", dest="detailed", default=True,
+        help="Do not process MakerNotes")
+    parser.add_argument(
+        "-t", "--stop-tag", default=DEFAULT_STOP_TAG,
+        help="Stop processing when this tag is retrieved."
+    )
+    parser.add_argument(
+        "-s", "--strict", action="store_true", default=False,
+        help="Run in strict mode (stop on errors)."
+    )
+    parser.add_argument(
+        "-d", "--debug", action="store_true", default=False,
+        help="Run in debug mode"
+    )
+
+    return parser.parse_args()
 
 
 def main():
     """Parse command line options/arguments and execute."""
-    try:
-        arg_names = ["help", "version", "quick", "strict", "debug", "stop-tag="]
-        opts, args = getopt.getopt(sys.argv[1:], "hvqsdct:v", arg_names)
-    except getopt.GetoptError:
-        usage(2)
+    args = parse_arguments()
 
-    detailed = True
-    stop_tag = DEFAULT_STOP_TAG
-    debug = False
-    strict = False
-    color = False
+    if args.version:
+        show_version()
+    print(args)
 
-    for option, arg in opts:
-        if option in ("-h", "--help"):
-            usage(0)
-        if option in ("-v", "--version"):
-            show_version()
-        if option in ("-q", "--quick"):
-            detailed = False
-        if option in ("-t", "--stop-tag"):
-            stop_tag = arg
-        if option in ("-s", "--strict"):
-            strict = True
-        if option in ("-d", "--debug"):
-            debug = True
-        if option in ("-c", "--color"):
-            color = True
-
-    if not args:
-        usage(2)
-
-    exif_log.setup_logger(debug, color)
+    exif_log.setup_logger(args.debug)
 
     # output info for each file
-    for filename in args:
+    for filename in args.files:
         file_start = timeit.default_timer()
         try:
             img_file = open(str(filename), 'rb')
@@ -97,7 +85,12 @@ def main():
         tag_start = timeit.default_timer()
 
         # get the tags
-        data = process_file(img_file, stop_tag=stop_tag, details=detailed, strict=strict, debug=debug)
+        data = process_file(
+            img_file,
+            stop_tag=args.stop_tag,
+            details=args.detailed,
+            strict=args.strict,
+            debug=args.debug)
 
         tag_stop = timeit.default_timer()
 
@@ -116,10 +109,7 @@ def main():
         tag_keys.sort()
 
         for i in tag_keys:
-            try:
-                logger.info('%s (%s): %s', i, FIELD_TYPES[data[i].field_type][2], data[i].printable)
-            except:
-                logger.error("%s : %s", i, str(data[i]))
+            logger.info('%s (%s): %s', i, FIELD_TYPES[data[i].field_type][2], data[i].printable)
 
         file_stop = timeit.default_timer()
 
