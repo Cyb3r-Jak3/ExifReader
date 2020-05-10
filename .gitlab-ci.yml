@@ -33,10 +33,6 @@ dependency_scanning:
     - find exif-samples-master -name *.tiff -o -name *.jpg | xargs EXIF.py
     - find exif-samples-master -name *.tiff -o -name *.jpg | xargs EXIF.py -d
 
-python-3.4-lint:
-  extends: ".lint"
-  image: python:3.4
-
 python-3.5-lint:
   extends: ".lint"
   image: python:3.5
@@ -66,10 +62,6 @@ python-3.8-lint:
     - python setup.py sdist bdist_wheel
     - python -m twine check dist/*
 
-python-3.4-build:
-  extends: ".build"
-  image: python:3.4
-
 python-3.5-build:
   extends: ".build"
   image: python:3.5
@@ -93,10 +85,6 @@ python-3.8-build:
   script:
     - pip install dist/*.whl
     - pip show -f ExifReader
-
-python-3.4-test:
-  extends: ".test"
-  image: python:3.4
 
 python-3.5-test:
   extends: ".test"
