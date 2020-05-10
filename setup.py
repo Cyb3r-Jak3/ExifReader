@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
-import exifreader
+from exifreader import __version__, __doc__
 
 readme_file = open("README.md", "rt").read()
 
 setup(
     name="ExifReader",
-    version=exifreader.__version__,
+    version=__version__,
     author="Cyb3r Jak3",
     author_email="jake@jwhite.network",
     python_requires=">=3.4",
@@ -19,7 +19,7 @@ setup(
     url="https://gitlab.com/Cyb3r-Jak3/exifreader",
     license="BSD",
     keywords="exif image metadata photo",
-    description=" ".join(exifreader.__doc__.splitlines()).strip(),
+    description=" ".join(__doc__.splitlines()).strip(),
     long_description=readme_file,
     long_description_content_type='text/markdown',
     classifiers=[

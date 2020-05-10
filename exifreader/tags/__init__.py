@@ -2,7 +2,7 @@
 Tag definitions
 """
 
-from .exif import *
+from exifreader.tags.exif import *
 from .makernote import *
 
 DEFAULT_STOP_TAG = 'UNDEF'
@@ -30,5 +30,3 @@ IGNORE_TAGS = (
     0x927C,  # MakerNote Tags
     0x02BC,  # XPM
 )
-
-__all__ = [".exif", ".makernote"]

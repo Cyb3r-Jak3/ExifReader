@@ -68,7 +68,6 @@ def main():
 
     if args.version:
         show_version()
-    print(args)
 
     exif_log.setup_logger(args.debug)
 
