@@ -150,7 +150,7 @@
 
 2007-10-28
     - Merged changes from ReimarBauer
-    - Added command line option for debug, stop 
+    - Added command line option for debug, stop
       processing on tag.
 
 2007-09-27
