@@ -4,15 +4,13 @@
 
 # As of 2019, the latest standard seems to be "ISO/IEC 14496-12:2015"
 # There are many different related standards. (quicktime, mov, mp4, etc...)
-# See https://en.wikipedia.org/wiki/ISO_base_media_file_format for more
-# details.
+# See https://en.wikipedia.org/wiki/ISO_base_media_file_format for more details.
 
 # We parse just enough of the iso format to locate the Exif data in the file.
 # Inside the 'meta' box are two directories we need:
-#   1) the 'iinf' box contains 'infe' records, we look for the item_ID for
-#       'Exif'.
-#   2) once we have the item_ID, we find a matching entry in the 'iloc' box,
-#       which gives us position and size information.
+#   1) the 'iinf' box contains 'infe' records, we look for the item_ID for 'Exif'.
+#   2) once we have the item_ID, we find a matching entry in the 'iloc' box, which
+#      gives us position and size information.
 
 import struct
 
@@ -21,19 +19,19 @@ from .exif_log import get_logger
 logger = get_logger()
 
 
-class WrongBox(Exception):
+class WrongBox (Exception):
     pass
 
 
-class NoParser(Exception):
+class NoParser (Exception):
     pass
 
 
-class BoxVersion(Exception):
+class BoxVersion (Exception):
     pass
 
 
-class BadSize(Exception):
+class BadSize (Exception):
     pass
 
 
@@ -54,7 +52,8 @@ class HEICExifFinder:
         r = self.file.read(nbytes)
         if not r:
             raise EOFError
-        return r
+        else:
+            return r
 
     def get16(self):
         return struct.unpack('>H', self.get(2))[0]
@@ -75,13 +74,14 @@ class HEICExifFinder:
     def get_int(self, size):
         if size == 2:
             return self.get16()
-        if size == 4:
+        elif size == 4:
             return self.get32()
-        if size == 8:
+        elif size == 8:
             return self.get64()
-        if size == 0:
+        elif size == 0:
             return 0
-        raise BadSize(size)
+        else:
+            raise BadSize(size)
 
     def get_string(self):
         r = []
@@ -92,7 +92,7 @@ class HEICExifFinder:
             r.append(ch)
         return b''.join(r)
 
-    def next_box(self):
+    def next_box(self, depth=0):
         pos = self.file.tell()
         size = self.get32()
         kind = self.get(4).decode('ascii')
@@ -216,15 +216,15 @@ class HEICExifFinder:
             if box.version in (1, 2):
                 # ignore construction_method
                 _ = self.get16()
-            # data_reference_index = self.get16()
+            data_reference_index = self.get16()
             box.base_offset = self.get_int(box.base_offset_size)
             extent_count = self.get16()
             extents = []
             for _ in range(extent_count):
-                # if box.version in (1, 2) and box.index_size > 0:
-                #     extent_index = self.get_int(box.index_size)
-                # else:
-                #     extent_index = -1
+                if box.version in (1, 2) and box.index_size > 0:
+                    extent_index = self.get_int(box.index_size)
+                else:
+                    extent_index = -1
                 extent_offset = self.get_int(box.offset_size)
                 extent_length = self.get_int(box.length_size)
                 extents.append((extent_offset, extent_length))
@@ -250,9 +250,8 @@ class HEICExifFinder:
         # b'Exif\x00\x00' (without APP1 marker, e.g. iOS)
         # according to "ISO/IEC 23008-12, 2017-12", both of them are legal
         exif_tiff_header_offset = self.get32()
-        if (exif_tiff_header_offset < 6
-                and self.get(exif_tiff_header_offset)[-6:] != b'Exif\x00\x00'):
-            raise AssertionError
+        assert exif_tiff_header_offset >= 6
+        assert self.get(exif_tiff_header_offset)[-6:] == b'Exif\x00\x00'
         offset = self.file.tell()
         endian = self.file.read(1)
         return offset, endian
