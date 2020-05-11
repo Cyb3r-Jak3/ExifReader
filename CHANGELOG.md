@@ -2,7 +2,7 @@
 
 ## ExifReader
 
-0.1.post1 — **Planed** 2020-05-11
+0.1.1 — 2020-05-11
     - Fixed issue with struct error
 
 0.1.0 — 2020-05-10
