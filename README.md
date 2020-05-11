@@ -31,7 +31,7 @@ Some examples:
 ```bash
 EXIF.py image1.jpg
 EXIF.py image1.jpg image2.tiff
-find ~/Pictures -name "*.jpg" -name "*.tiff" | xargs EXIF.py
+find ~/Pictures -name "*.jpg" -name "*.heic" -name "*.tiff" | xargs EXIF.py
 ```
 
 Show command line options
