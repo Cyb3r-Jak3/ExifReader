@@ -31,7 +31,7 @@ Some examples:
 ```bash
 EXIF.py image1.jpg
 EXIF.py image1.jpg image2.tiff
-find ~/Pictures -name "*.jpg" -name "*.tiff" | xargs EXIF.py
+find ~/Pictures -name "*.jpg" -name "*.heic" -name "*.tiff" | xargs EXIF.py
 ```
 
 Show command line options
@@ -43,12 +43,12 @@ EXIF.py --help
 ### Python Script
 
 ```python
-import exifread
-    # Open image file for reading (binary mode)
-    f = open(path_name, 'rb')
+import exifreader
+# Open image file for reading (binary mode)
+f = open(path_name, 'rb')
 
-    # Return Exif tags
-    tags = exifread.process_file(f)
+# Return Exif tags
+tags = exifread.process_file(f)
 ```
 
 Returned tags will be a dictionary mapping names of Exif tags to their
@@ -56,9 +56,9 @@ values in the file named by path_name.
 You can process the tags as you wish. In particular, you can iterate through all the tags with
 
 ```python
-    for tag in tags.keys():
-        if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
-            print "Key: %s, value %s" % (tag, tags[tag])
+for tag in tags.keys():
+    if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
+        print "Key: %s, value %s" % (tag, tags[tag])
 ```
 
 An ``if`` statement is used to avoid printing out a few of the tags that tend to be long or boring.
@@ -91,7 +91,7 @@ Don't process makernotes tags, don't extract the thumbnail image (if any).
 Pass the ``-q`` or ``--quick`` command line arguments, or as
 
 ```python
-    tags = exifread.process_file(f, details=False)
+tags = exifread.process_file(f, details=False)
 ```
 
 ### Stop at a Given Tag
@@ -101,7 +101,7 @@ To stop processing the file after a specified tag is retrieved.
 Pass the ``-t TAG`` or ``--stop-tag TAG`` argument, or as
 
 ```python
-    tags = exifread.process_file(f, stop_tag='TAG')
+tags = exifread.process_file(f, stop_tag='TAG')
 ```
 
 where ``TAG`` is a valid tag name, ex ``'DateTimeOriginal'``.
