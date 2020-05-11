@@ -4,7 +4,7 @@ Change Log
 
 ExifReader
 
-0.1.post1 — UNRELEASED
+0.1.post1 — **Planned** 2020-05-11
     * Fixed struct error
 
 0.1.0 — 2020-05-10

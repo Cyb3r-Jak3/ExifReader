@@ -16,7 +16,7 @@ Code Contributions
 Please start from the ``develop`` branch for any code or documentation contributions.
 You may even find the work has already been done...
 
-Normally the ``master`` branch is only for stable, released code.
+The ``publish`` branch is only for stable, released code.
 
 Sample Images
 *************

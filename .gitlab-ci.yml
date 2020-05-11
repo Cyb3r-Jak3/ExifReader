@@ -90,8 +90,7 @@ python-3.8-build:
   script:
     - pip install dist/*.whl
     - pip show -f ExifReader
-    - find exif-samples-master -name *.tiff -o -name *.jpg | xargs EXIF.py
-    - find exif-samples-master -name *.tiff -o -name *.jpg | xargs EXIF.py -d
+    - find exif-samples-master -name *.tiff -o -name *.jpg -o -name *.heic | xargs EXIF.py -d
 
 
 python-3.5-test:
