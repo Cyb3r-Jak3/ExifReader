@@ -2,6 +2,17 @@
 Change Log
 **********
 
+ExifReader
+
+0.1.post1 — UNRELEASED
+    * Fixed struct error
+
+0.1.0 — 2020-05-10
+    * First release under ExifReader equivalate to ExifRead 2.2.0
+
+
+
+ExifRead
 2.2.0 — 2019-07-24
     * Add support for Python 3.5, 3.6, 3.7
     * Drop official support for Python 2.6, 3.2, 3.3

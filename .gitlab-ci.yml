@@ -26,6 +26,8 @@ dependency_scanning:
   before_script:
     - pip install -U pip . -r requirements.txt bandit flake8 pylint
     - wget --quiet https://github.com/ianare/exif-samples/archive/master.tar.gz; tar -xzf master.tar.gz
+    - wget --quiet https://raw.githubusercontent.com/Cyb3r-Jak3/MetaStalk/master/ExamplePhotos/heic/IMG_1751.HEIC -P exif-samples-master/
+    - wget --quiet https://raw.githubusercontent.com/Cyb3r-Jak3/MetaStalk/master/ExamplePhotos/heic/image1.heic -P exif-samples-master/
   script:
     # Pylint throws many errors that need to work to fix
     #- pylint --rcfile=tox.ini EXIF.py ExifReader
@@ -84,6 +86,8 @@ python-3.8-build:
   before_script:
     - pip install -U pip --quiet
     - wget --quiet https://github.com/ianare/exif-samples/archive/master.tar.gz; tar -xzf master.tar.gz
+    - wget --quiet https://raw.githubusercontent.com/Cyb3r-Jak3/MetaStalk/master/ExamplePhotos/heic/IMG_1751.HEIC -P exif-samples-master/
+    - wget --quiet https://raw.githubusercontent.com/Cyb3r-Jak3/MetaStalk/master/ExamplePhotos/heic/image1.heic -P exif-samples-master/
   script:
     - pip install dist/*.whl
     - pip show -f ExifReader
